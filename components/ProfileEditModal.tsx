@@ -287,7 +287,7 @@ const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ profile, onSave, on
                     value={formData.timezone}
                     onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
                   >
-                    {allTimezones.map((tz: string) => <option key={tz} value={tz}>{tz.replace(/_/g, ' ')}</option>)}
+                    {allTimezones.map(tz => <option key={tz} value={tz}>{tz.replace(/_/g, ' ')}</option>)}
                   </select>
                   <button onClick={detectTimezone} className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-sky-500/10 rounded-xl transition-all group" title="Auto-Detect Sector">
                     <RefreshCcw className={`w-3.5 h-3.5 text-sky-500 ${isDetectingTz ? 'animate-spin' : ''}`} />

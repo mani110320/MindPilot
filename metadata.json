@@ -1,5 +1,5 @@
 {
-  "name": "MindPilot",
+  "name": "Copy MindPilot",
   "description": "Strategic Command Habit Tracker. Deploy high-intensity protocols, sync with AI Command, and track tactical performance in high-fidelity environments.",
   "requestFramePermissions": [
     "microphone"

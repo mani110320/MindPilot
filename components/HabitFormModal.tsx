@@ -188,7 +188,7 @@ const HabitFormModal: React.FC<HabitFormModalProps> = ({ habit, onSave, onDelete
                 <ShieldAlert className={`w-5 h-5 ${formData.distractionBlocker ? 'text-red-500' : 'opacity-40'}`} />
                 <div className="text-left">
                   <p className="text-[10px] font-black uppercase tracking-widest leading-none">Focus Protocol</p>
-                  <p className="text-[8px] font-black uppercase opacity-60 tracking-widest mt-1">Warns on switch. &gt;3 breaches degrades streak.</p>
+                  <p className="text-[8px] font-black uppercase opacity-60 tracking-widest mt-1">Warns on switch. >3 breaches degrades streak.</p>
                 </div>
               </div>
               <div className={`w-10 h-5 rounded-full relative transition-colors ${formData.distractionBlocker ? 'bg-red-500' : 'bg-slate-300'}`}>

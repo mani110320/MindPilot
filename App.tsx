@@ -9,7 +9,7 @@ import {
   Cpu, Shield, Layers, Radio, Send,
   Skull, Music, Twitter, Instagram, Globe, RefreshCcw, Crosshair,
   Terminal, ShieldCheck, Sparkles, Hash, Database, Share2, Users, Star,
-  Trophy, VolumeX, Volume2 as VolumeIcon, CalendarDays, ChevronDown
+  Trophy, VolumeX, Volume2 as VolumeIcon, CalendarDays, ChevronDown, FileText
 } from 'lucide-react';
 
 import { Habit, CompletionLog, UserProfile, Difficulty, AppTheme, HabitAlertType, CompletionStatus } from './types.ts';
@@ -30,6 +30,7 @@ import TutorialOverlay from './components/TutorialOverlay.tsx';
 import PostMissionReport from './components/PostMissionReport.tsx';
 import NotificationGuideModal from './components/NotificationGuideModal.tsx';
 import RateUsModal from './components/RateUsModal.tsx'; 
+import OperationalManual from './components/OperationalManual.tsx';
 import { GeminiCoach } from './services/geminiService.ts';
 import { NotificationService } from './services/notificationService.ts';
 
@@ -60,7 +61,7 @@ async function decodeAudioData(
   sampleRate: number,
   numChannels: number,
 ): Promise<AudioBuffer> {
-  const dataInt16 = new Int16Array(data.buffer, data.byteOffset, data.byteLength / 2);
+  const dataInt16 = new Int16Array(data.buffer);
   const frameCount = dataInt16.length / numChannels;
   const buffer = ctx.createBuffer(numChannels, frameCount, sampleRate);
 
@@ -122,6 +123,7 @@ const App: React.FC = () => {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isHabitModalOpen, setIsHabitModalOpen] = useState(false);
   const [isRateModalOpen, setIsRateModalOpen] = useState(false); 
+  const [isManualOpen, setIsManualOpen] = useState(false);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [showNotificationGuide, setShowNotificationGuide] = useState(false);
   
@@ -240,8 +242,8 @@ const App: React.FC = () => {
       recognition.interimResults = false;
       recognition.lang = profile.language;
       recognition.onstart = () => setIsRecording(true);
-      recognition.onend = () => setIsRecording(false);
-      recognition.onerror = () => setIsRecording(false);
+      recognition.onend = () => { setIsRecording(false); };
+      recognition.onerror = () => { setIsRecording(false); };
       recognition.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
         if (chatInputRef.current) chatInputRef.current.value = transcript;
@@ -412,6 +414,7 @@ const App: React.FC = () => {
       {showNotificationGuide && <NotificationGuideModal theme={theme} onClose={() => setShowNotificationGuide(false)} />}
       {interventionMessage && <CoachIntervention message={interventionMessage} onDismiss={() => setInterventionMessage(null)} theme={theme} coachAvatar={profile.coachAvatar} />}
       {isRateModalOpen && <RateUsModal onClose={() => setIsRateModalOpen(false)} theme={theme} />}
+      {isManualOpen && <OperationalManual onClose={() => setIsManualOpen(false)} theme={theme} />}
 
       {isHabitModalOpen && <HabitFormModal habit={editingHabit || undefined} onSave={(h) => { if (editingHabit) setHabits(prev => prev.map(old => old.id === editingHabit.id ? { ...old, ...h } : old)); else setHabits(prev => [...prev, { frequency: 'daily', recurrenceMode: 'fixed', interval: 1, ...h, id: Math.random().toString(36).substr(2,9), createdAt: Date.now(), streak: 0 } as Habit]); setIsHabitModalOpen(false); setEditingHabit(null); }} onDelete={(id) => { setHabits(prev => prev.filter(p => p.id !== id)); setIsHabitModalOpen(false); setEditingHabit(null); }} onCancel={() => { setIsHabitModalOpen(false); setEditingHabit(null); }} theme={theme} />}
       {isEditingProfile && <ProfileEditModal profile={profile} onSave={(p) => { setProfile(p); setIsEditingProfile(false); }} onCancel={() => setIsEditingProfile(false)} theme={theme} />}
@@ -647,6 +650,7 @@ const App: React.FC = () => {
               </div>
               <div className="grid grid-cols-1 gap-4">
                  <button onClick={() => setIsEditingProfile(true)} className={`p-6 ${themeStyles.card} border ${themeStyles.border} rounded-[1.5rem] flex items-center justify-between group active:scale-[0.98] transition-all hover:border-sky-300`}><div className="flex items-center gap-5"><div className={`w-12 h-12 rounded-xl flex items-center justify-center ${theme === 'dark' ? 'bg-blue-900 text-sky-400' : 'bg-slate-50 text-sky-600'}`}><UserCog className="w-5 h-5" /></div><div><p className={`text-sm font-black uppercase tracking-tight ${themeStyles.heading}`}>{t.profile.modify}</p></div></div><ChevronRight className="w-4 h-4 opacity-20" /></button>
+                 <button onClick={() => setIsManualOpen(true)} className={`p-6 ${themeStyles.card} border ${themeStyles.border} rounded-[1.5rem] flex items-center justify-between group active:scale-[0.98] transition-all hover:border-sky-300`}><div className="flex items-center gap-5"><div className={`w-12 h-12 rounded-xl flex items-center justify-center ${theme === 'dark' ? 'bg-blue-950 text-sky-400' : 'bg-slate-50 text-sky-600'}`}><FileText className="w-5 h-5" /></div><div><p className={`text-sm font-black uppercase tracking-tight ${themeStyles.heading}`}>Operational Manual</p></div></div><ChevronRight className="w-4 h-4 opacity-20" /></button>
                  <button onClick={() => { if (navigator.share) navigator.share({ title: 'COMMANDER Tactical Progress', text: `Tactical Progress: Momentum at ${profile.motivationScore}.` }); }} className={`p-6 ${themeStyles.card} border ${themeStyles.border} rounded-[1.5rem] flex items-center justify-between group active:scale-[0.98] transition-all hover:border-emerald-300`}><div className="flex items-center gap-5"><div className={`w-12 h-12 rounded-xl flex items-center justify-center ${theme === 'dark' ? 'bg-emerald-900/40 text-emerald-400' : 'bg-emerald-50 text-emerald-600'}`}><Share2 className="w-5 h-5" /></div><div><p className={`text-sm font-black uppercase tracking-tight ${themeStyles.heading}`}>{t.profile.share}</p></div></div><Users className="w-4 h-4 opacity-20" /></button>
                  <button onClick={() => setIsRateModalOpen(true)} className={`p-6 ${themeStyles.card} border ${themeStyles.border} rounded-[1.5rem] flex items-center justify-between group active:scale-[0.98] transition-all hover:border-sky-300`}><div className="flex items-center gap-5"><div className={`w-12 h-12 rounded-xl flex items-center justify-center ${theme === 'dark' ? 'bg-sky-900/40 text-sky-400' : 'bg-sky-50 text-sky-600'}`}><Star className="w-5 h-5" /></div><div><p className={`text-sm font-black uppercase tracking-tight ${themeStyles.heading}`}>{t.profile.rate}</p></div></div><ChevronRight className="w-4 h-4 opacity-20" /></button>
               </div>

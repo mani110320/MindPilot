@@ -3,7 +3,7 @@ import { GoogleGenAI, Modality } from "@google/genai";
 
 export class GeminiCoach {
   private get ai(): GoogleGenAI {
-    return new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    return new GoogleGenAI({ apiKey: process.env.API_KEY });
   }
 
   getMotivation = async (habitName: string, intention: string): Promise<string> => {
